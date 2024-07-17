@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+  </head>
+  <body>
+    <form method="post" action="{% url 'update' init_obj.id %}">
+        {% csrf_token %}
+        <table>
+            <tbody>
+                <tr><td>
+                    <label for="name">Name:</label>
+                    <input type="text" id="title" name="title" value="{{ form_data.name|default:init_obj.title }}">
+                </td></tr>
+                
+            </tbody>
+        </table>
+        <table class="table" id="data-table">
+            <thead>
+                <tr>
+                    <th>Field 1</th>
+                    <th>Field 2</th>
+                    <th>Field 3</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="text" name="field1_0"></td>
+                    <td><input type="text" name="field2_0"></td>
+                    <td><input type="text" name="field3_0"></td>
+                    <td><button type="button" class="delete-row-button btn btn-danger">Delete</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <button type="button" id="add-row-button" class="btn btn-primary">+</button>
+        <button type="submit">保存</button>
+    </form>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            // 行を追加するボタンがクリックされたときの処理
+            $('#add-row-button').click(function() {
+                addRow();
+            });
+
+            // 削除ボタンがクリックされたときの処理を委任
+            $('#data-table').on('click', '.delete-row-button', function() {
+                $(this).closest('tr').remove();
+            });
+        });
+
+        // 行を追加する関数
+        function addRow() {
+            const rowCount = $('#data-table tbody tr').length;
+            const newRowHTML = createNewRowHTML(rowCount);
+            $('#data-table tbody').append(newRowHTML);
+        }
+
+        // 新しい行のHTMLを作成する関数
+        function createNewRowHTML(rowCount) {
+            return `
+                <tr>
+                    <td><input type="text" name="field1_${rowCount}"></td>
+                    <td><input type="text" name="field2_${rowCount}"></td>
+                    <td><input type="text" name="field3_${rowCount}"></td>
+                    <td><button type="button" class="delete-row-button btn btn-danger">Delete</button></td>
+                </tr>
+            `;
+        }
+    </script>  
+</body>
+</html>
