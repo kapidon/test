@@ -1,6 +1,35 @@
 from abc import ABC, abstractmethod
 from .repository import BaseDetailRepository, BaseUpdateRepository
 
+class UseCase:
+    def __init__(self, repository: Repository):
+        self.repository = repository
+
+    def execute(self, value1: str, value2: str) -> EntityDTO:
+        try:
+            entity = Factory.create_entity(value1, value2)
+            if entity.is_valid():
+                self.repository.save(entity)
+                return EntityDTO(
+                    value_object1=value1,
+                    value_object2=value2,
+                    error_messages=entity.error_messages,
+                    success_messages=entity.success_messages
+                )
+            else:
+                return EntityDTO(
+                    value_object1=value1,
+                    value_object2=value2,
+                    error_messages=entity.error_messages,
+                    success_messages=[]
+                )
+        except Exception as e:
+            return EntityDTO(
+                value_object1=value1,
+                value_object2=value2,
+                error_messages={"unexpected_error": str(e)},
+                success_messages=[]
+            )
 
 class BaseDetailUsecase(ABC):
     def __init__(self, repository: BaseDetailRepository):

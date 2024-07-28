@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Validation Example</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <label for="value1">Value 1:</label>
+        <input type="text" id="value1" name="value1" value="{{ dto.value_object1 }}">
+        {% if dto.error_messages.value_object1 %}
+            <div>{{ dto.error_messages.value_object1 }}</div>
+        {% endif %}
+        <br>
+        <label for="value2">Value 2:</label>
+        <input type="text" id="value2" name="value2" value="{{ dto.value_object2 }}">
+        {% if dto.error_messages.value_object2 %}
+            <div>{{ dto.error_messages.value_object2 }}</div>
+        {% endif %}
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+    {% if dto.success_messages %}
+        <div>
+            <h3>Success Messages</h3>
+            <ul>
+                {% for message in dto.success_messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% if dto.error_messages.unexpected_error %}
+        <div class="error">
+            {{ dto.error_messages.unexpected_error }}
+        </div>
+    {% endif %}
+</body>
+</html>

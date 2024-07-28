@@ -5,6 +5,26 @@ from .controller import DetailController
 from .usecase import DetailUsecase
 from .repository import DetailRepository
 
+from django.shortcuts import render
+from django.views import View
+from .use_cases import UseCase
+from .repositories import Repository
+
+class MyView(View):
+    def get(self, request):
+        return render(request, 'template.html')
+
+    def post(self, request):
+        value1 = request.POST.get('value1')
+        value2 = request.POST.get('value2')
+
+        repository = Repository()
+        use_case = UseCase(repository)
+        dto = use_case.execute(value1, value2)
+
+        return render(request, 'template.html', {
+            'dto': dto,
+        })
 
 class ListView(TemplateView):
     template_name = 'list.html'
