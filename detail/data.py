@@ -97,3 +97,47 @@ class Validator:
     def is_empty(value):
         bool(value)
 
+class CsvProcessor:
+    def __init__(self, brand_factory, file_log_factory, file_log_repository, brand_repository, file_row_log_factory, file_row_log_repository):
+        self.brand_factory = brand_factory
+        self.file_log_factory = file_log_factory
+        self.file_log_repository = file_log_repository
+        self.brand_repository = brand_repository
+        self.file_row_log_factory = file_row_log_factory
+        self.file_row_log_repository = file_row_log_repository
+
+    def process_csv_contents(self, csv_contents):
+        brand_entities = []
+        file_row_log_entities = []
+        file_log_entity = self.file_log_factory.create(message='開始')
+        self.file_log_repository.create(file_log_entity)
+
+        try:
+            for index, csv_content in enumerate(csv_contents):
+                self._process_csv_row(index, csv_content, brand_entities, file_row_log_entities)
+                
+            self.brand_repository.bulk_create(brand_entities)
+            self.file_row_log_repository.bulk_create(file_row_log_entities)
+            file_log_entity.update(message='完了')
+            self.file_log_repository.save(file_log_entity)
+
+        except Exception as e:
+            file_log_entity.update(message=str(e))
+            self.file_log_repository.save(file_log_entity)
+
+    def _process_csv_row(self, index, csv_content, brand_entities, file_row_log_entities):
+        try:
+            brand_entity = self.brand_factory.create_entity_from_csv(csv_content)
+            if not brand_entity.is_valid():
+                raise ValueError(brand_entity.error_messages_dict)
+            brand_entities.append(brand_entity)
+            file_row_log_entity = self.file_row_log_factory.create_entity(line_num=index, message='成功')
+            file_row_log_entities.append(file_row_log_entity)
+        except ValueError as e:
+            error_message = '\n'.join(e.args[0])
+            file_row_log_entity = self.file_row_log_factory.create_entity(line_num=index, message=error_message)
+            file_row_log_entities.append(file_row_log_entity)
+
+# 呼び出し例
+processor = CsvProcessor(brand_factory, file_log_factory, file_log_repository, brand_repository, file_row_log_factory, file_row_log_repository)
+processor.process_csv_contents(csv_contents)
