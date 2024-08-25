@@ -7,6 +7,6 @@ class TestView(TemplateView):
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        list = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
-        context.update({'list':list})
+        dict = {'a': 'あ', 'b': 'ぶ', 'c': 'ちゅ', 'd': 'ぢゅ'}
+        context.update({'dict':dict})
         return context

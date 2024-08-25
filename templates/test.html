@@ -13,13 +13,10 @@
   <body>
     <table>
         <tbody>
-          {% for l in list %}
-          <td><input type="button" value="表示" data-toggle="modal" data-target="#test{{ forloop.counter }}"></td>
-            {% include 'testmodal.html' with l=l counter=forloop.counter %}
-          {% endfor %}
+          <td><input type="button" value="表示" data-toggle="modal" data-target="#test"></td>
         </tbody>
     </table>
-
+    {% include 'testmodal.html' with dict=dict %}
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
