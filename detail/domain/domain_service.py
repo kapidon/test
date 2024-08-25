@@ -8,7 +8,12 @@ class DomainService:
     def is_correct_malls(self, entity):
         malls = api.get
         return set(entity.malls).issubset(set(malls))
-
+    def is_correct_mall(self, entity):
+        client_malls = api.get
+        for mall_option in entity.mall_option_values:
+            if not mall_option.mall_code in client_malls:
+                return False
+        return True
 class Repository:
     def find_by_code(self, code):
         try:
@@ -21,3 +26,5 @@ class UseCase:
         raise ValueError(すでに登録されているコードです)
     if not is_correct_malls(master_entity):
         raise ValueError('モールがおかしい')
+    if not is_correct_mall(master_entity):
+        raise ValueError('モールオプションのモールおかしい')

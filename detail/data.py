@@ -8,6 +8,72 @@ from dataclasses import dataclass, field
 from typing import List
 
 @dataclass
+class BaseMallValueObject:
+    mall_code:str
+    item_code: str
+    item_value: str
+    error_messages: List[str] = field(default_factory=list)
+    success_messages: List[str] = field(default_factory=list)
+
+    def __post_init__(self):
+        self.validate()
+    
+    def get_validation_mapping(self):
+        pass
+
+    def validate(self):
+        raise NotImplementedError("Subclasses should implement validate method")
+
+    def is_valid(self) -> bool:
+        return len(self.error_messages) == 0
+
+@dataclass
+class MallValueObject1(BaseMallValueObject):
+    def validate(self):
+        validation_func = self.get_validation_mapping(self.item_code)
+        validation_func(self.item_value)
+    
+    def get_validation_mapping(self, item_code):
+        validation_mapping = {'aiueo': self.aiueo_validation}
+        return validation_mapping[item_code]
+    def aiueo_validaiton(self, value):
+        if max_length(value, 3):
+            self.error_messages.append('aiueo')
+
+@dataclass
+class BaseDictValueObject:
+    item_code: str
+    item_value: str
+    error_messages: List[str] = field(default_factory=list)
+    success_messages: List[str] = field(default_factory=list)
+
+    def __post_init__(self):
+        self.validate()
+    
+    def get_validation_mapping(self):
+        pass
+
+    def validate(self):
+        raise NotImplementedError("Subclasses should implement validate method")
+
+    def is_valid(self) -> bool:
+        return len(self.error_messages) == 0
+
+
+@dataclass
+class DictValueObject1(BaseDictValueObject):
+    def validate(self):
+        validation_func = self.get_validation_mapping(self.item_code)
+        validation_func(self.item_value)
+    
+    def get_validation_mapping(self, item_code):
+        validation_mapping = {'aiueo': self.aiueo_validation}
+        return validation_mapping[item_code]
+    def aiueo_validaiton(self, value):
+        if max_length(value, 3):
+            self.error_messages.append('aiueo')
+
+@dataclass
 class ValueObject:
     value: str
     error_messages: List[str] = field(default_factory=list)
@@ -57,7 +123,8 @@ class Entity:
         if not self.value_object1.is_valid():
             self.error_messages['value_object1'] = "\n".join(self.value_object1.error_messages)
         else:
-            self.success_messages.extend(self.value_object1.success_messages)
+            if self.value_object1.success_messages:
+                self.success_messages.extend(self.value_object1.success_messages)
         
         if not self.value_object2.is_valid():
             self.error_messages['value_object2'] = "\n".join(self.value_object2.error_messages)
